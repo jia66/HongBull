@@ -4,7 +4,7 @@ from langgraph.graph import END, MessageGraph,StateGraph
 from langchain_core.utils.function_calling import convert_to_openai_tool
 from langchain.tools.render import format_tool_to_openai_function
 from model.LLMHub import *
-from promt import *
+from prompt import *
 from tool.tools import *
 from langgraph.prebuilt import ToolInvocation,ToolExecutor
 from langchain_core.messages import FunctionMessage

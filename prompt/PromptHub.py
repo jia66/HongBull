@@ -1,6 +1,6 @@
 from langchain_core.prompts import ChatPromptTemplate
 
-def getPromt(key):
+def getPrompt(key):
     prompt_template = ChatPromptTemplate.from_messages([
         ("system", SystemPromptDict[key]),
         ("user", UserPromptDict[key])
