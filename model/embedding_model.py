@@ -1,5 +1,4 @@
 
-
 from zhipuai import ZhipuAI
 from langchain_core.embeddings.embeddings import Embeddings
 
