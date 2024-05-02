@@ -1,16 +1,37 @@
-from xmlrpc.client import ServerProxy
 import time
+from xmlrpc.client import ServerProxy
 
-server_url = "http://localhost:8000/"
+from ..core import Crawler, CrawlSearchTask, CrawlTask
 
-def call_rpc(method: function, retry_times: int = 3, sleep_time: int = 2):
-    """
-    Call RPC method with retry
-    """
-    for i in range(retry_times):
-        try:
-            with ServerProxy(server_url) as proxy:
-                return method(proxy)
-        except Exception as e:
-            print(e)
-            time.sleep(sleep_time)
+
+class MediaCrawler(Crawler):
+
+    __server_url = "http://localhost:8000/"
+
+    def __init__(self):
+        super().__init__(name="MediaCrawler")
+
+    def __call_rpc(self, rpc_method: str, *args, retry_times: int = 1, retry_sleep: int = 2):
+        for i in range(retry_times):
+            try:
+                with ServerProxy(self.__server_url) as proxy:
+                    method = getattr(proxy, rpc_method)
+                    print(method.__name__)
+                    print(args)
+                    if method:
+                        method(*args)
+                    else:
+                        print(f"RPC method {rpc_method} not found")
+                    return
+            except Exception as e:
+                print(e)
+                if i == retry_times - 1:
+                    raise e
+                else:
+                    time.sleep(retry_sleep)
+
+    def run(self, task: CrawlTask):
+        if isinstance(task, CrawlSearchTask):
+            self.__call_rpc("search", task.keyword, task.start_page)
+        else:
+            print(f"MediaCrawler unsupported task type: {type(task)}")

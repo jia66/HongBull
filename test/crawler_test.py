@@ -1,4 +1,6 @@
 from crawler import *
 
-if __name__ == '__main__':
+def run():
     crawler = MediaCrawler()
+    task = CrawlSearchTask(keyword="动物手链,云养宠物")
+    crawler.run(task=task)
