@@ -1,5 +1,6 @@
 import time
 from xmlrpc.client import ServerProxy
+import json
 
 from ..core import Crawler, CrawlSearchTask, CrawlTask
 
@@ -16,13 +17,15 @@ class MediaCrawler(Crawler):
             try:
                 with ServerProxy(self.__server_url) as proxy:
                     method = getattr(proxy, rpc_method)
+                    result = None
                     print(method.__name__)
                     print(args)
                     if method:
-                        method(*args)
+                        result = method(*args)
                     else:
                         print(f"RPC method {rpc_method} not found")
-                    return
+                    print(f"search result: {result}")
+                    return result
             except Exception as e:
                 print(e)
                 if i == retry_times - 1:
@@ -32,6 +35,9 @@ class MediaCrawler(Crawler):
 
     def run(self, task: CrawlTask):
         if isinstance(task, CrawlSearchTask):
-            self.__call_rpc("search", task.keyword, task.start_page)
+            result = self.__call_rpc("search", task.keyword, task.start_page)
+            with open(result, "r", encoding="utf-8") as f:
+                search_result_json = json.load(f)
+                print(search_result_json)
         else:
             print(f"MediaCrawler unsupported task type: {type(task)}")
